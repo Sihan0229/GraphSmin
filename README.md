@@ -1,5 +1,5 @@
 # GraphSmin
-This is the code for GraphSmin.
+This is the source code of GraphSmin: Imbalanced Dissolved Gas Analysis with Contrastive Dual-Channel Graph Filters.
 ## Overview
 Dissolved Gas Analysis (DGA) is a widely adopted technique for detecting faults in oil-immersed power transformers. However, in the context of DGA fault diagnosis, the fault class
 has considerably fewer samples compared to the normal class. Directly constructing fault
@@ -21,3 +21,16 @@ and reliability of the proposed method in imbalanced DGA fault diagnosis.
 <div  align="center">    
       Figure 1: Illustration of the proposed GraphSmin.
 </div>
+
+## Environments
+The environment file is provided as requirements.txt.
+
+## Datasets
+Datasets are from 
+https://ieee-dataport.org/documents/dissolved-gas-data-transformer-oil-fault-diagnosis-power-transformers-membership-degree
+and https://github.com/alan-456/transformer-fault-dataset.
+
+## Training
+```
+python main.py --model <MODEL NAME> --setting <SETTING NAME> --split_method <SPLIT METHOD>
+```
