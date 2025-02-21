@@ -9,7 +9,10 @@ args = parser.parse_args()
 
 def get_info_from_file():
     """get data from file"""
-    data = np.loadtxt('./data/transformer/github.csv', dtype=float)
+    #data = np.loadtxt('/root/autodl-tmp/GraphSmin/data/transformer/github.csv', dtype=float)
+    #data = np.loadtxt('/root/autodl-tmp/data/DGA_data_pre.csv', dtype=float)
+    with open('/root/autodl-tmp/data/DGA_data_pre.csv', 'r', encoding='utf-8-sig') as f:
+        data = np.loadtxt(f, dtype=float, delimiter=',')
     data = np.unique(data, axis=0)
     features = data[:, :-1]
     labels = data[:, -1]
@@ -19,9 +22,11 @@ def get_info_from_file():
     # print("f shape: ", features.shape)
     # print("l shape: ", labels.shape)
 
-    DGA2000_fault_types = ['Normal', 'Low-Temperature Overheating', 'Medium-Temperature Overheating',
-                           'High Temperature Overheating',
-                           'Partial Discharge', 'Low-Energy Discharge', 'High-Energy Discharge']
+    #DGA2000_fault_types = ['Normal', 'Low-Temperature Overheating', 'Medium-Temperature Overheating',
+    #                       'High Temperature Overheating',
+    #                       'Partial Discharge', 'Low-Energy Discharge', 'High-Energy Discharge']
+    DGA2000_fault_types = ['HED', 'HT', 'LED',
+                           'LT', 'MT', 'PD']
     C = len(set(labels.tolist()))
     num_classes = [sum(map(lambda x: x == i, labels.numpy())) for i in range(C)]
     print("*********************************************")
