@@ -8,7 +8,8 @@ from args import get_parser
 args = get_parser().parse_args()
 top_k = args.topK
 
-
+# 计算特征之间的相似性
+# 来构建同质性图和异质性图的邻接矩阵。
 def construct_graph(features, labels):
     print("constructing KNN graph...")
     [nnodes, n_feat] = features.shape
@@ -24,7 +25,9 @@ def construct_graph(features, labels):
     # print("score_hm: ", score_hm)
     return adj_hm, adj_ht
 
-
+# 具体实现了同质性图和异质性图的构建。
+# 同质性图通过选择每个节点的前top_k个最相似节点来构建，
+# 而异质性图通过选择每个节点的前top_k个最不相似节点来构建。
 def con_graph(features, labels, nnodes):
 
     method = 'heat'
@@ -81,7 +84,7 @@ def con_graph(features, labels, nnodes):
     print()
     return weights_lp, weights_hp
 
-
+# 将构建的图转换为对称的邻接矩阵
 def build_adjacency_matrix(adj, is_mutual_matrix):
     if is_mutual_matrix:
         new_adj = adj * adj.T

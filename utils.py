@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score
 from args import get_parser
 args = get_parser().parse_args()
 
-
+# 长尾采样（Long-tailed Sampling）
 def LT_split(labels, IR, K):
     num_majority = args.LT_major
     C = len(set(labels.tolist()))
@@ -29,7 +29,7 @@ def LT_split(labels, IR, K):
     sorted_indices = list(reversed(sorted_indices))[: K]
     return num_sampling, sorted_indices
 
-
+# 实现阶梯采样（Step Sampling）
 def step_split(labels, IM, K):
     num_majority = args.ST_major
     C = len(set(labels.tolist()))
@@ -120,7 +120,7 @@ def print_class_acc(output, labels):
     print(' auc-roc score: {:.4f}, macro_F score: {:.4f}'.format(auc_score, macro_F))
     return auc_score, macro_F
 
-
+# 实现阶梯采样，用于生成少数类样本。
 def step_sample(embed, labels, idx_train, adj=None, portion=1.0, num_minority=3):
     c_largest = labels.max().item()
     avg_number = int(idx_train.shape[0] / (c_largest + 1))
@@ -173,7 +173,7 @@ def step_sample(embed, labels, idx_train, adj=None, portion=1.0, num_minority=3)
     else:
         return embed, labels, idx_train
 
-
+# 实现长尾采样，用于生成少数类样本。
 def long_tailed_sampling(embed, labels, idx_train, adj=None, portion=0.8, sorted_indices=None):
     im_classes = sorted_indices
     adj_new = None
@@ -216,7 +216,8 @@ def long_tailed_sampling(embed, labels, idx_train, adj=None, portion=0.8, sorted
     else:
         return embed, labels, idx_train
 
-
+# 计算邻接矩阵的均方误差损失。
+# 与论文中提到的边预测器损失函数一致，用于优化图结构。
 def adj_mse_loss(adj_rec, adj_tgt):
     edge_num = adj_tgt.nonzero().shape[0]
     total_num = adj_tgt.shape[0] ** 2
@@ -227,7 +228,8 @@ def adj_mse_loss(adj_rec, adj_tgt):
     loss = torch.sum(weight_matrix * (adj_rec - adj_tgt) ** 2)
     return loss
 
-
+# 通过特征掩码和边丢弃生成两个视图。
+# 对比学习中的数据增强方法
 def augmentation(features_1, adj_1, features_2, adj_2, training):
     # view 1
     mask_1, _ = get_feat_mask(features_1, args.maskfeat_rate_1)
@@ -241,7 +243,7 @@ def augmentation(features_1, adj_1, features_2, adj_2, training):
 
     return features_1, adj_1, features_2, adj_2
 
-
+# 生成特征掩码（feature mask）
 def get_feat_mask(features, mask_rate):
     feat_node = features.shape[1]
     mask = torch.zeros(features.shape)
@@ -251,7 +253,7 @@ def get_feat_mask(features, mask_rate):
         mask = mask.cuda()
     return mask, samples
 
-
+# 邻接矩阵的归一化，低通滤波
 def normalize_lp_adj(adj):
     adj += torch.eye(adj.shape[0])
     adj = sp.coo_matrix(adj)
@@ -265,7 +267,7 @@ def normalize_lp_adj(adj):
 
     return adj
 
-
+# 邻接矩阵的归一化，高通滤波
 def normalize_hp_adj(adj):
     adj += torch.eye(adj.shape[0])
     adj = sp.coo_matrix(adj)
@@ -279,7 +281,7 @@ def normalize_hp_adj(adj):
     adj = torch.eye(adj.shape[0]) - adj * 0.1  # I - (D-1/2)A˜(D-1/2) * a
     return adj
 
-
+# 计算图的同质性分数，即连接相同标签节点的边的比例。
 def homo_score(labels, adj):
     score_hm = 0
     score_ht = 0

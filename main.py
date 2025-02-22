@@ -33,6 +33,8 @@ def train(epoch, sorted_indices=None):
     optimizer_de.zero_grad()
 
     # augmentation
+    # augmentation函数生成了两组不同的图表示（features_1, adj_1和features_2, adj_2）
+    # 分别对应论文中提到的同质性图（Homophilic Graph）和异质性图（Heterophilic Graph）
     features_1, adj_1, features_2, adj_2 = utils.augmentation(features, lp_adj, features, hp_adj, gcl_model.training)
 
     loss_gcl = gcl_model.forward(features_1, adj_1, features_2, adj_2)
@@ -55,6 +57,8 @@ def train(epoch, sorted_indices=None):
                                                                          adj=adj.detach(),
                                                                          portion=args.up_scale, num_minority=args.K)
 
+        # 边预测器，用于生成新节点与原始节点之间的连接
+        # generated_G是解码器生成的邻接矩阵，loss_edge是边预测的损失函数
         generated_G = decoder(embed)
 
         loss_edge = utils.adj_mse_loss(generated_G[:ori_num, :][:, :ori_num], adj.detach())
@@ -88,6 +92,7 @@ def train(epoch, sorted_indices=None):
         idx_train_new = idx_train
         adj_new = adj
 
+    # 分类器训练
     output = classifier(embed, adj_new)
 
     loss_cls = F.cross_entropy(output[idx_train_new], labels_new[idx_train_new])

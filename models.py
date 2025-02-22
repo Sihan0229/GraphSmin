@@ -10,6 +10,7 @@ from torch.nn import Sequential, Linear, ReLU
 
 class GraphConvolution(Module):
     """
+    图卷积网络（GCN）的基本层
     Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
     """
     def __init__(self, in_features, out_features, bias=True):
@@ -167,7 +168,7 @@ class Classifier(nn.Module):
         x = self.mlp(x)
         return x
 
-
+# 边预测器（Edge Predictor），用于生成新节点与原始节点之间的连接
 class Decoder(Module):
     def __init__(self, nembed, dropout=0.1):
         super(Decoder, self).__init__()
@@ -183,7 +184,8 @@ class Decoder(Module):
         adj_out = torch.sigmoid(torch.mm(combine, combine.transpose(-1, -2)))
         return adj_out
 
-
+# 计算两个嵌入向量之间的相似性，用于对比学习中的损失计算。
+# 它通过归一化嵌入向量并计算它们的点积来实现。
 def sim(z1: torch.Tensor, z2: torch.Tensor):
     z1 = F.normalize(z1)
     z2 = F.normalize(z2)
